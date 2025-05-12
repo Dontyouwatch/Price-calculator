@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f5f5f5; text-align: center; padding: 20px; }
+        .container { width: 350px; margin: auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0px 0px 15px rgba(0,0,0,0.1); }
+        input, select { display: block; margin: 10px auto; padding: 8px; width: 90%; border-radius: 5px; border: 1px solid #ccc; }
+        .btn { margin: 10px auto; padding: 8px 12px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .delete-btn { background: red; color: white; border: none; padding: 5px; margin-left: 10px; border-radius: 3px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Pricing Calculator</h2>
+        <form id="pricingForm">
+            <label>Manufacturing Price:</label>
+            <input type="number" id="mfgPrice" value="5000" oninput="updatePricing()">
+
+            <label>Selling Price:</label>
+            <input type="number" id="sellingPrice" value="7000" oninput="updatePricing()">
+
+            <label>GST (%):</label>
+            <input type="number" id="gst" value="18" oninput="updatePricing()">
+
+            <label>Operational Costs:</label>
+            <input type="number" id="operationalCosts" value="500" oninput="updatePricing()">
+
+            <div id="extraFields"></div>
+
+            <button type="button" class="btn" onclick="addField()">➕ Add Field</button>
+
+            <h3>Report Overview</h3>
+            <p>MFG Price: <span id="reportMfgPrice">5000</span></p>
+            <p>Selling Price: <span id="reportSellingPrice">7000</span></p>
+            <p>GST Amount: <span id="gstAmount">0</span></p>
+            <p>Operational Cost: <span id="adjustedCosts">0</span></p>
+            <div id="extraReport"></div>
+            <p>Remaining Margin: <span id="remainingMargin">0</span></p>
+        </form>
+    </div>
+
+    <script>
+        function updatePricing() {
+            let sellingPrice = parseFloat(document.getElementById("sellingPrice").value);
+            let gstRate = parseFloat(document.getElementById("gst").value);
+            let operationalCosts = parseFloat(document.getElementById("operationalCosts").value);
+            let gstAmount = (sellingPrice * gstRate) / (100 + gstRate);
+            let extraCosts = 0, extraReport = "";
+
+            document.querySelectorAll(".extra-input").forEach(input => {
+                let type = input.dataset.type, value = parseFloat(input.value) || 0, name = input.dataset.name;
+                value = type === "percentage" ? (sellingPrice * value) / 100 : value;
+                extraCosts += value;
+                extraReport += `<p>${name}: ${value.toFixed(2)}</p>`;
+            });
+
+            document.getElementById("reportMfgPrice").textContent = document.getElementById("mfgPrice").value;
+            document.getElementById("reportSellingPrice").textContent = document.getElementById("sellingPrice").value;
+            document.getElementById("gstAmount").textContent = gstAmount.toFixed(2);
+            document.getElementById("adjustedCosts").textContent = operationalCosts.toFixed(2);
+            document.getElementById("remainingMargin").textContent = (sellingPrice - (gstAmount + operationalCosts + extraCosts)).toFixed(2);
+            document.getElementById("extraReport").innerHTML = extraReport;
+        }
+
+        function addField() {let container = document.getElementById("extraFields");
+            let div = document.createElement("div");
+        div.innerHTML = `
+            <input type="text" placeholder="Field Name" class="extra-name">
+            <select class="extra-type"><option value="integer">Integer</option><option value="percentage">Percentage (%)</option></select>
+            <input type="number" class="extra-input" placeholder="Value">
+            <button type="button" class="delete-btn">❌</button>
+        `;
+
+        div.querySelector(".extra-input").oninput = updatePricing;
+        div.querySelector(".extra-type").onchange = function () { div.querySelector(".extra-input").dataset.type = this.value; };
+        div.querySelector(".extra-name").oninput = function () { div.querySelector(".extra-input").dataset.name = this.value; };
+        div.querySelector(".delete-btn").onclick = () => { container.removeChild(div); updatePricing(); };
+
+        container.appendChild(div);
+    }
+</script>
+</body>
+</html>
+
