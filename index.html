@@ -4,84 +4,438 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Pricing Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background: #f5f5f5; text-align: center; padding: 20px; }
-        .container { width: 350px; margin: auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0px 0px 15px rgba(0,0,0,0.1); }
-        input, select { display: block; margin: 10px auto; padding: 8px; width: 90%; border-radius: 5px; border: 1px solid #ccc; }
-        .btn { margin: 10px auto; padding: 8px 12px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        .delete-btn { background: red; color: white; border: none; padding: 5px; margin-left: 10px; border-radius: 3px; cursor: pointer; }
+                html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Poppins', Arial, sans-serif;
+        }
+
+        body {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            margin: auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            text-align: left;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        h3 {
+            text-align: center;
+            color: #444;
+            margin-top: 35px;
+            margin-bottom: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            font-weight: 500;
+            font-size: 1.3em;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        select {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 18px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="number"]:focus,
+        input[type="text"]:focus,
+        select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .btn-full-width {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+
+        #addFieldFormContainer {
+            border: 1px solid #d1d9e6;
+            padding: 25px;
+            margin-top: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        #addFieldFormContainer h4 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #343a40;
+            font-weight: 600;
+            text-align: center;
+        }
+        #addFieldFormContainer label {
+            font-size: 0.85em;
+            margin-bottom: 6px;
+        }
+        #addFieldFormContainer input[type="text"],
+        #addFieldFormContainer select {
+            margin-bottom: 15px;
+        }
+        .definition-form-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        #confirmAddFieldBtn { background-color: #28a745; }
+        #confirmAddFieldBtn:hover { background-color: #218838; }
+        #cancelAddFieldBtn { background-color: #6c757d; }
+        #cancelAddFieldBtn:hover { background-color: #5a6268; }
+
+        #extraFields {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* MODIFIED STYLES FOR DYNAMIC FIELDS */
+        .extra-field-item {
+            margin-bottom: 18px; /* Provides spacing between each dynamic field, like standard inputs */
+            /* No border, background, or padding for a "flat" look */
+        }
+
+        .extra-field-item label {
+            /* Standard label styling (already consistent with 'label' rule) */
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        .input-delete-wrapper {
+            display: flex;
+            align-items: center; /* Vertically aligns the input and button */
+        }
+
+        .extra-field-item .extra-value-input {
+            flex-grow: 1; /* Input takes available space */
+            padding: 12px; /* Match standard input padding */
+            font-size: 1em; /* Match standard input font-size */
+            border: 1px solid #ccc;
+            border-radius: 6px; /* Start with standard radius */
+            border-top-right-radius: 0; /* Remove for joining */
+            border-bottom-right-radius: 0; /* Remove for joining */
+            border-right-width: 0; /* Remove right border, button's left border will show */
+            box-sizing: border-box;
+            margin-bottom: 0; /* Parent .extra-field-item handles bottom margin */
+            position: relative; /* For z-index on focus */
+            z-index: 0;
+        }
+
+        .extra-field-item .extra-value-input:focus {
+            border-color: #007bff; /* Standard focus color for other borders */
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+            z-index: 1; /* Ensures focus shadow is on top of the adjacent button */
+        }
+
+        .delete-btn { /* General style for delete buttons, also used here */
+            background: #dc3545;
+            color: white;
+            border: 1px solid #dc3545; /* Button has its own distinct border */
+            padding: 12px 12px; /* Match vertical padding of input for height, horizontal for icon space */
+            border-radius: 6px; /* Start with standard radius */
+            border-top-left-radius: 0; /* Remove for joining */
+            border-bottom-left-radius: 0; /* Remove for joining */
+            cursor: pointer;
+            font-size: 0.9em; /* Size of the '❌' icon character */
+            line-height: 1; /* Helps to vertically center the text icon '❌' */
+            flex-shrink: 0; /* Don't shrink button */
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            box-sizing: border-box; /* Ensures padding/border are included in width/height calc */
+        }
+        .delete-btn:hover {
+            background: #c82333;
+            border-color: #c82333;
+        }
+        /* END OF MODIFIED STYLES */
+
+
+        #pricingForm p {
+            margin-bottom: 12px;
+            color: #333;
+            font-size: 0.95em;
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        #pricingForm p:last-child {
+            border-bottom: none;
+        }
+        #pricingForm p span {
+            font-weight: 600;
+            color: #000;
+        }
+        #extraReport p {
+             margin-bottom: 10px; color: #333; font-size: 0.95em; display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee;
+        }
+        #extraReport p:last-child {
+            border-bottom: none;
+        }
+        #extraReport p span {
+            font-weight: 600; color: #000;
+        }
+        #newFieldNameError {
+            color: red;
+            font-size: 0.8em;
+            display: block;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Pricing Calculator</h2>
-        <form id="pricingForm">
-            <label>Manufacturing Price:</label>
+        <h2>Product Pricing Calculator</h2>
+        <form id="pricingForm" onsubmit="return false;">
+            <label for="mfgPrice">Manufacturing Price:</label>
             <input type="number" id="mfgPrice" value="5000" oninput="updatePricing()">
 
-            <label>Selling Price:</label>
+            <label for="sellingPrice">Selling Price (GST Inclusive):</label>
             <input type="number" id="sellingPrice" value="7000" oninput="updatePricing()">
 
-            <label>GST (%):</label>
+            <label for="gst">GST (%):</label>
             <input type="number" id="gst" value="18" oninput="updatePricing()">
 
-            <label>Operational Costs:</label>
+            <label for="operationalCosts">Operational Costs (Fixed):</label>
             <input type="number" id="operationalCosts" value="500" oninput="updatePricing()">
 
-            <div id="extraFields"></div>
+            <!-- Container for dynamically added fields - MOVED HERE -->
+            <div id="extraFields">
+                <!-- Dynamically added fields will go here -->
+            </div>
 
-            <button type="button" class="btn" onclick="addField()">➕ Add Field</button>
+            <button type="button" class="btn btn-full-width" id="showAddFieldFormBtn" onclick="showAddFieldForm()">➕ Add Cost/Fee</button>
+
+            <div id="addFieldFormContainer" style="display: none;">
+                <h4>Define New Cost/Fee</h4>
+                <label for="newFieldName">Name:</label>
+                <input type="text" id="newFieldName" placeholder="e.g., Shipping Fee, Commission">
+                <span id="newFieldNameError"></span>
+
+                <label for="newFieldType">Calculation Type:</label>
+                <select id="newFieldType">
+                    <option value="fixed">Fixed Amount</option>
+                    <option value="percentage_taxable">Percentage of Taxable Price (%)</option>
+                </select>
+
+                <div class="definition-form-actions">
+                    <button type="button" class="btn" id="cancelAddFieldBtn" onclick="hideAddFieldForm()">Cancel</button>
+                    <button type="button" class="btn" id="confirmAddFieldBtn" onclick="confirmAndCreateField()">Add Field</button>
+                </div>
+            </div>
 
             <h3>Report Overview</h3>
-            <p>MFG Price: <span id="reportMfgPrice">5000</span></p>
-            <p>Selling Price: <span id="reportSellingPrice">7000</span></p>
+            <p>MFG Price: <span id="reportMfgPrice">0</span></p>
+            <p>Selling Price (GST Incl.): <span id="reportSellingPrice">0</span></p>
             <p>GST Amount: <span id="gstAmount">0</span></p>
-            <p>Operational Cost: <span id="adjustedCosts">0</span></p>
-            <div id="extraReport"></div>
-            <p>Remaining Margin: <span id="remainingMargin">0</span></p>
+            <p>Price Before GST (Taxable Price): <span id="priceBeforeGST">0</span></p>
+            <p>Operational Costs: <span id="reportOperationalCosts">0</span></p>
+            <div id="extraReport">
+                <!-- Dynamically added cost reports will go here -->
+            </div>
+            <p style="font-weight: bold; font-size: 1.1em; color: #28a745; margin-top:15px; padding-top:10px; border-top: 1px solid #ccc;">Remaining Margin: <span id="remainingMargin">0</span></p>
         </form>
     </div>
 
     <script>
-        function updatePricing() {
-            let sellingPrice = parseFloat(document.getElementById("sellingPrice").value);
-            let gstRate = parseFloat(document.getElementById("gst").value);
-            let operationalCosts = parseFloat(document.getElementById("operationalCosts").value);
-            let gstAmount = (sellingPrice * gstRate) / (100 + gstRate);
-            let extraCosts = 0, extraReport = "";
+        let fieldCounter = 0;
+        const addFieldFormContainer = document.getElementById('addFieldFormContainer');
+        const newFieldNameInput = document.getElementById('newFieldName');
+        const newFieldNameError = document.getElementById('newFieldNameError');
+        const newFieldTypeSelect = document.getElementById('newFieldType');
+        const extraFieldsContainer = document.getElementById('extraFields'); // This is the correct container
+        const mainAddButton = document.getElementById('showAddFieldFormBtn');
 
-            document.querySelectorAll(".extra-input").forEach(input => {
-                let type = input.dataset.type, value = parseFloat(input.value) || 0, name = input.dataset.name;
-                value = type === "percentage" ? (sellingPrice * value) / 100 : value;
-                extraCosts += value;
-                extraReport += `<p>${name}: ${value.toFixed(2)}</p>`;
-            });
-
-            document.getElementById("reportMfgPrice").textContent = document.getElementById("mfgPrice").value;
-            document.getElementById("reportSellingPrice").textContent = document.getElementById("sellingPrice").value;
-            document.getElementById("gstAmount").textContent = gstAmount.toFixed(2);
-            document.getElementById("adjustedCosts").textContent = operationalCosts.toFixed(2);
-            document.getElementById("remainingMargin").textContent = (sellingPrice - (gstAmount + operationalCosts + extraCosts)).toFixed(2);
-            document.getElementById("extraReport").innerHTML = extraReport;
+        function showAddFieldForm() {
+            addFieldFormContainer.style.display = 'block';
+            newFieldNameInput.value = '';
+            newFieldTypeSelect.value = 'fixed';
+            newFieldNameError.textContent = '';
+            mainAddButton.style.display = 'none'; // Hide the main "Add" button
+            newFieldNameInput.focus();
         }
 
-        function addField() {let container = document.getElementById("extraFields");
-            let div = document.createElement("div");
-        div.innerHTML = `
-            <input type="text" placeholder="Field Name" class="extra-name">
-            <select class="extra-type"><option value="integer">Integer</option><option value="percentage">Percentage (%)</option></select>
-            <input type="number" class="extra-input" placeholder="Value">
-            <button type="button" class="delete-btn">❌</button>
-        `;
+        function hideAddFieldForm() {
+            addFieldFormContainer.style.display = 'none';
+            mainAddButton.style.display = 'block'; // Show the main "Add" button again
+            newFieldNameError.textContent = '';
+        }
 
-        div.querySelector(".extra-input").oninput = updatePricing;
-        div.querySelector(".extra-type").onchange = function () { div.querySelector(".extra-input").dataset.type = this.value; };
-        div.querySelector(".extra-name").oninput = function () { div.querySelector(".extra-input").dataset.name = this.value; };
-        div.querySelector(".delete-btn").onclick = () => { container.removeChild(div); updatePricing(); };
+        function confirmAndCreateField() {
+            const fieldName = newFieldNameInput.value.trim();
+            const fieldType = newFieldTypeSelect.value;
 
-        container.appendChild(div);
-    }
-</script>
+            if (!fieldName) {
+                newFieldNameError.textContent = 'Field name cannot be empty.';
+                newFieldNameInput.focus();
+                return;
+            }
+            newFieldNameError.textContent = '';
+
+            fieldCounter++;
+            const fieldInputId = `extraValueInput_${fieldCounter}`;
+
+            const fieldItemDiv = document.createElement('div');
+            fieldItemDiv.className = 'extra-field-item';
+
+            const label = document.createElement('label');
+            label.setAttribute('for', fieldInputId);
+            label.textContent = fieldName;
+
+            const inputWrapper = document.createElement('div');
+            inputWrapper.className = 'input-delete-wrapper';
+
+            const valueInput = document.createElement('input');
+            valueInput.type = 'number';
+            valueInput.id = fieldInputId;
+            valueInput.placeholder = fieldType === 'percentage_taxable' ? 'Enter %' : 'Enter Amount';
+            valueInput.className = 'extra-value-input';
+            valueInput.dataset.name = fieldName;
+            valueInput.dataset.type = fieldType;
+            valueInput.oninput = updatePricing;
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '❌';
+            deleteBtn.title = 'Delete this field';
+            deleteBtn.onclick = () => {
+                extraFieldsContainer.removeChild(fieldItemDiv); // Remove from #extraFields
+                updatePricing();
+            };
+
+            inputWrapper.appendChild(valueInput);
+            inputWrapper.appendChild(deleteBtn);
+
+            fieldItemDiv.appendChild(label);
+            fieldItemDiv.appendChild(inputWrapper);
+
+            // Append the new field to the #extraFields container
+            // Since #extraFields is now positioned above the "Add" button in HTML, this works.
+            extraFieldsContainer.appendChild(fieldItemDiv);
+
+            hideAddFieldForm();
+            updatePricing();
+        }
+
+
+        function updatePricing() {
+            let mfgPrice = parseFloat(document.getElementById("mfgPrice").value) || 0;
+            let sellingPrice = parseFloat(document.getElementById("sellingPrice").value) || 0;
+            let gstRate = parseFloat(document.getElementById("gst").value) || 0;
+            let operationalCosts = parseFloat(document.getElementById("operationalCosts").value) || 0;
+
+            let priceBeforeGST = 0;
+            let gstAmount = 0;
+
+            if (gstRate > 0) {
+                priceBeforeGST = sellingPrice / (1 + gstRate / 100);
+                gstAmount = sellingPrice - priceBeforeGST;
+            } else {
+                priceBeforeGST = sellingPrice;
+                gstAmount = 0;
+            }
+            
+            let totalExtraCosts = 0;
+            let extraReportHTML = "";
+
+            // Query within the #extraFields container specifically
+            document.querySelectorAll("#extraFields .extra-field-item .extra-value-input").forEach(input => {
+                let type = input.dataset.type;
+                let value = parseFloat(input.value) || 0;
+                let name = input.dataset.name || "Unnamed Cost";
+                
+                let calculatedValue = 0;
+                if (type === "percentage_taxable") {
+                    calculatedValue = (priceBeforeGST * value) / 100;
+                } else { 
+                    calculatedValue = value;
+                }
+                totalExtraCosts += calculatedValue;
+                extraReportHTML += `<p>${name}: <span>${calculatedValue.toFixed(2)}</span></p>`;
+            });
+
+            document.getElementById("reportMfgPrice").textContent = mfgPrice.toFixed(2);
+            document.getElementById("reportSellingPrice").textContent = sellingPrice.toFixed(2);
+            document.getElementById("gstAmount").textContent = gstAmount.toFixed(2);
+            document.getElementById("priceBeforeGST").textContent = priceBeforeGST.toFixed(2);
+            document.getElementById("reportOperationalCosts").textContent = operationalCosts.toFixed(2);
+            document.getElementById("extraReport").innerHTML = extraReportHTML;
+
+            let totalCostsIncurred = mfgPrice + operationalCosts + totalExtraCosts;
+            let remainingMargin = priceBeforeGST - totalCostsIncurred;
+
+            const marginSpan = document.getElementById("remainingMargin");
+            marginSpan.textContent = remainingMargin.toFixed(2);
+            marginSpan.style.color = remainingMargin >= 0 ? '#28a745' : '#dc3545';
+        }
+
+        document.addEventListener('DOMContentLoaded', updatePricing);
+    </script>
 </body>
 </html>
-
