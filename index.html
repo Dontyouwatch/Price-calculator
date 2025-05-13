@@ -5,246 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Pricing Calculator</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/docx@7.8.0/build/index.js"></script>
+
     <style>
-                html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: 'Poppins', Arial, sans-serif;
-        }
-
+        html, body { margin: 0; padding: 0; height: 100%; font-family: 'Poppins', Arial, sans-serif; }
         body {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1502920514313-52581002a659?q=80&w=2067&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 40px 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
+            background-image: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?auto=format&fit=crop&w=1200&q=80');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            display: flex; align-items: flex-start; justify-content: center;
+            min-height: 100vh; padding: 40px 20px; box-sizing: border-box; overflow-y: auto;
         }
-
-        .container {
-            width: 100%;
-            max-width: 550px;
-            margin: auto;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-            text-align: left;
+        .container { width: 100%; max-width: 900px; margin:auto; padding:30px; background:rgba(255,255,255,0.98); border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.2); text-align:left; }
+        h2, h3, h4 { text-align:center; color:#333; font-weight:600; }
+        h2 { margin-bottom:25px; }
+        h3 { margin-top:35px; margin-bottom:20px; padding-top:20px; border-top:1px solid #e0e0e0; font-weight:500; font-size:1.3em; }
+        .content-layout-wrapper > .report-column > h3:first-child,
+        .content-layout-wrapper > .chart-export-column > h3:first-child { margin-top: 0; border-top: none; padding-top:0;}
+        h4 { margin-top:0; margin-bottom:20px; color:#343a40; }
+        label { display:block; margin-bottom:8px; font-weight:500; color:#555; font-size:.9em; }
+        input[type="number"], input[type="text"], select {
+            display:block; width:100%; padding:12px; margin-bottom:18px; border-radius:6px; border:1px solid #ccc; box-sizing:border-box; font-size:1em; transition:border-color .3s, box-shadow .3s;
         }
-
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 25px;
-            font-weight: 600;
-        }
-
-        h3 {
-            text-align: center;
-            color: #444;
-            margin-top: 35px;
-            margin-bottom: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-            font-weight: 500;
-            font-size: 1.3em;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #555;
-            font-size: 0.9em;
-        }
-
-        input[type="number"],
-        input[type="text"],
-        select {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 18px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-            font-size: 1em;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        input[type="number"]:focus,
-        input[type="text"]:focus,
-        select:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 12px 20px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
-            text-align: center;
-            box-sizing: border-box;
-        }
-        .btn-full-width {
-            display: block;
-            width: 100%;
-            margin-top: 10px;
-        }
-        .btn:hover {
-            background: #0056b3;
-        }
-
-        #addFieldFormContainer {
-            border: 1px solid #d1d9e6;
-            padding: 25px;
-            margin-top: 20px;
-            margin-bottom: 25px;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-        }
-        #addFieldFormContainer h4 {
-            margin-top: 0;
-            margin-bottom: 20px;
-            color: #343a40;
-            font-weight: 600;
-            text-align: center;
-        }
-        #addFieldFormContainer label {
-            font-size: 0.85em;
-            margin-bottom: 6px;
-        }
-        #addFieldFormContainer input[type="text"],
-        #addFieldFormContainer select {
-            margin-bottom: 15px;
-        }
-        .definition-form-actions {
-            margin-top: 20px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-        #confirmAddFieldBtn { background-color: #28a745; }
-        #confirmAddFieldBtn:hover { background-color: #218838; }
-        #cancelAddFieldBtn { background-color: #6c757d; }
-        #cancelAddFieldBtn:hover { background-color: #5a6268; }
-
-        #extraFields {
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-
-        /* MODIFIED STYLES FOR DYNAMIC FIELDS */
-        .extra-field-item {
-            margin-bottom: 18px; /* Provides spacing between each dynamic field, like standard inputs */
-            /* No border, background, or padding for a "flat" look */
-        }
-
-        .extra-field-item label {
-            /* Standard label styling (already consistent with 'label' rule) */
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #555;
-            font-size: 0.9em;
-        }
-
-        .input-delete-wrapper {
-            display: flex;
-            align-items: center; /* Vertically aligns the input and button */
-        }
-
+        input[type="number"]:focus, input[type="text"]:focus, select:focus { border-color:#007bff; outline:none; box-shadow:0 0 0 .2rem rgba(0,123,255,.25); }
+        .btn { display:inline-block; padding:12px 20px; color:white; border:none; border-radius:6px; cursor:pointer; font-size:1em; font-weight:500; transition:background-color .3s ease; text-align:center; box-sizing:border-box; }
+        .btn-full-width { display:block; width:100%; margin-top:10px; }
+        .btn-primary { background-color: #007bff; } .btn-primary:hover { background-color: #0056b3;}
+        .btn-success { background-color:#28a745; } .btn-success:hover { background-color:#218838; }
+        .btn-secondary { background-color:#6c757d; } .btn-secondary:hover { background-color:#5a6268; }
+        #addFieldFormContainer { border:1px solid #d1d9e6; padding:25px; margin:20px 0 25px; border-radius:8px; background-color:#f8f9fa; box-shadow:inset 0 2px 4px rgba(0,0,0,0.05); }
+        .definition-form-actions { margin-top:20px; display:flex; justify-content:flex-end; gap:10px; }
+        #extraFields { margin-top:20px; margin-bottom:10px; }
+        .extra-field-item { margin-bottom:18px; }
+        .input-delete-wrapper { display:flex; align-items:center; }
         .extra-field-item .extra-value-input {
-            flex-grow: 1; /* Input takes available space */
-            padding: 12px; /* Match standard input padding */
-            font-size: 1em; /* Match standard input font-size */
-            border: 1px solid #ccc;
-            border-radius: 6px; /* Start with standard radius */
-            border-top-right-radius: 0; /* Remove for joining */
-            border-bottom-right-radius: 0; /* Remove for joining */
-            border-right-width: 0; /* Remove right border, button's left border will show */
-            box-sizing: border-box;
-            margin-bottom: 0; /* Parent .extra-field-item handles bottom margin */
-            position: relative; /* For z-index on focus */
-            z-index: 0;
+            flex-grow:1; padding:12px; font-size:1em; border:1px solid #ccc; border-radius:6px;
+            border-top-right-radius:0; border-bottom-right-radius:0; border-right-width:0;
+            box-sizing:border-box; margin-bottom:0; position:relative; z-index:0;
         }
-
-        .extra-field-item .extra-value-input:focus {
-            border-color: #007bff; /* Standard focus color for other borders */
-            outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-            z-index: 1; /* Ensures focus shadow is on top of the adjacent button */
-        }
-
-        .delete-btn { /* General style for delete buttons, also used here */
-            background: #dc3545;
-            color: white;
-            border: 1px solid #dc3545; /* Button has its own distinct border */
-            padding: 12px 12px; /* Match vertical padding of input for height, horizontal for icon space */
-            border-radius: 6px; /* Start with standard radius */
-            border-top-left-radius: 0; /* Remove for joining */
-            border-bottom-left-radius: 0; /* Remove for joining */
-            cursor: pointer;
-            font-size: 0.9em; /* Size of the '❌' icon character */
-            line-height: 1; /* Helps to vertically center the text icon '❌' */
-            flex-shrink: 0; /* Don't shrink button */
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-            box-sizing: border-box; /* Ensures padding/border are included in width/height calc */
-        }
-        .delete-btn:hover {
-            background: #c82333;
-            border-color: #c82333;
-        }
-        /* END OF MODIFIED STYLES */
-
-
-        #pricingForm p {
-            margin-bottom: 12px;
-            color: #333;
-            font-size: 0.95em;
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px dashed #eee;
-        }
-        #pricingForm p:last-child {
-            border-bottom: none;
-        }
-        #pricingForm p span {
-            font-weight: 600;
-            color: #000;
-        }
-        #extraReport p {
-             margin-bottom: 10px; color: #333; font-size: 0.95em; display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee;
-        }
-        #extraReport p:last-child {
-            border-bottom: none;
-        }
-        #extraReport p span {
-            font-weight: 600; color: #000;
-        }
-        #newFieldNameError {
-            color: red;
-            font-size: 0.8em;
-            display: block;
-            margin-top: -10px;
-            margin-bottom: 10px;
+        .extra-field-item .extra-value-input:focus { border-color:#007bff; outline:none; box-shadow:0 0 0 .2rem rgba(0,123,255,.25); z-index:1; }
+        .delete-btn { background:#dc3545; color:white; border:1px solid #dc3545; padding:12px; border-radius:6px; border-top-left-radius:0; border-bottom-left-radius:0; cursor:pointer; font-size:.9em; line-height:1; flex-shrink:0; transition:background-color .3s ease, border-color .3s ease; box-sizing:border-box; }
+        .delete-btn:hover { background:#c82333; border-color:#c82333; }
+        /* On-page report items */
+        #reportOverviewSection p, #extraReport p { margin-bottom:12px; color:#333; font-size:.95em; display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #eee; }
+        #reportOverviewSection p:last-of-type, #extraReport p:last-of-type { border-bottom:none; }
+        #reportOverviewSection p span, #extraReport p span { font-weight:600; color:#000; }
+        #newFieldNameError { color:red; font-size:.8em; display:block; margin-top:-10px; margin-bottom:10px; }
+        #chartContainer { width:100%; max-width:400px; margin:0 auto 20px auto; position:relative; }
+        .export-dropdown-container { position:relative; display:inline-block; text-align:center; }
+        #exportBtn { background-color:#17a2b8; } #exportBtn:hover { background-color:#138496; }
+        .export-dropdown-menu { display:none; position:absolute; background-color:white; min-width:200px; box-shadow:0 8px 16px rgba(0,0,0,0.2); z-index:100; border-radius:5px; overflow:hidden; left:50%; transform:translateX(-50%); top:100%; margin-top:5px; }
+        .export-dropdown-menu a { color:black; padding:12px 16px; text-decoration:none; display:block; font-size:.9em; }
+        .export-dropdown-menu a:hover { background-color:#f1f1f1; }
+        .content-layout-wrapper {}
+        .report-column, .chart-export-column { width: 100%; }
+        .chart-export-column { margin-top: 20px; }
+        #exportSection { text-align: center; margin-top: 25px; }
+        @media (min-width: 992px) {
+            .container { max-width: 1100px; }
+            .content-layout-wrapper { display: flex; gap: 40px; align-items: flex-start; }
+            .report-column { flex: 0 0 55%; max-width: 55%; }
+            .chart-export-column { flex: 0 0 40%; max-width: 40%; display: flex; flex-direction: column; align-items: center; margin-top: 0; }
+            .chart-export-column h3 { width:100%; margin-bottom:20px; } /* Price Breakdown Title*/
+            #chartContainer { width: 100%; max-width: 100%; margin-bottom: 25px; }
+            #exportSection { margin-top: 0; width: auto; }
         }
     </style>
 </head>
@@ -254,188 +79,248 @@
         <form id="pricingForm" onsubmit="return false;">
             <label for="mfgPrice">Manufacturing Price:</label>
             <input type="number" id="mfgPrice" value="5000" oninput="updatePricing()">
-
             <label for="sellingPrice">Selling Price (GST Inclusive):</label>
             <input type="number" id="sellingPrice" value="7000" oninput="updatePricing()">
-
             <label for="gst">GST (%):</label>
             <input type="number" id="gst" value="18" oninput="updatePricing()">
-
             <label for="operationalCosts">Operational Costs (Fixed):</label>
             <input type="number" id="operationalCosts" value="500" oninput="updatePricing()">
-
-            <!-- Container for dynamically added fields - MOVED HERE -->
-            <div id="extraFields">
-                <!-- Dynamically added fields will go here -->
-            </div>
-
-            <button type="button" class="btn btn-full-width" id="showAddFieldFormBtn" onclick="showAddFieldForm()">➕ Add Cost/Fee</button>
-
+            <div id="extraFields"></div>
+            <button type="button" class="btn btn-full-width btn-primary" id="showAddFieldFormBtn" onclick="showAddFieldForm()">➕ Add Cost/Fee</button>
             <div id="addFieldFormContainer" style="display: none;">
                 <h4>Define New Cost/Fee</h4>
                 <label for="newFieldName">Name:</label>
                 <input type="text" id="newFieldName" placeholder="e.g., Shipping Fee, Commission">
                 <span id="newFieldNameError"></span>
-
                 <label for="newFieldType">Calculation Type:</label>
                 <select id="newFieldType">
                     <option value="fixed">Fixed Amount</option>
                     <option value="percentage_taxable">Percentage of Taxable Price (%)</option>
                 </select>
-
                 <div class="definition-form-actions">
-                    <button type="button" class="btn" id="cancelAddFieldBtn" onclick="hideAddFieldForm()">Cancel</button>
-                    <button type="button" class="btn" id="confirmAddFieldBtn" onclick="confirmAndCreateField()">Add Field</button>
+                    <button type="button" class="btn btn-secondary" id="cancelAddFieldBtn" onclick="hideAddFieldForm()">Cancel</button>
+                    <button type="button" class="btn btn-success" id="confirmAddFieldBtn" onclick="confirmAndCreateField()">Add Field</button>
                 </div>
             </div>
 
-            <h3>Report Overview</h3>
-            <p>MFG Price: <span id="reportMfgPrice">0</span></p>
-            <p>Selling Price (GST Incl.): <span id="reportSellingPrice">0</span></p>
-            <p>GST Amount: <span id="gstAmount">0</span></p>
-            <p>Price Before GST (Taxable Price): <span id="priceBeforeGST">0</span></p>
-            <p>Operational Costs: <span id="reportOperationalCosts">0</span></p>
-            <div id="extraReport">
-                <!-- Dynamically added cost reports will go here -->
+            <div class="content-layout-wrapper">
+                <div class="report-column">
+                    <div id="reportOverviewSection">
+                        <h3>Report Overview</h3>
+                        <p>MFG Price: <span id="reportMfgPrice">0</span></p>
+                        <p>Selling Price (GST Incl.): <span id="reportSellingPrice">0</span></p>
+                        <p>GST Amount: <span id="gstAmount">0</span></p>
+                        <p>Price Before GST (Taxable Price): <span id="priceBeforeGST">0</span></p>
+                        <p>Operational Costs: <span id="reportOperationalCosts">0</span></p>
+                        <!-- Dynamically added costs will appear below this line, if any -->
+                        <div id="extraReport"></div>
+                        <!-- Total of dynamic costs will appear in exports, not necessarily on page summary -->
+                        <p style="font-weight:bold;font-size:1.1em;color:#28a745;margin-top:15px;padding-top:10px;border-top:1px solid #ccc;">Remaining Margin: <span id="remainingMargin">0</span></p>
+                    </div>
+                </div>
+
+                <div class="chart-export-column">
+                    <h3>Price Breakdown</h3>
+                    <div id="chartContainer"><canvas id="priceBreakdownChart"></canvas></div>
+                    <div id="exportSection" class="export-dropdown-container">
+                        <button type="button" class="btn" id="exportBtn" onclick="toggleExportDropdown()">Export Report 🔽</button>
+                        <div id="exportDropdownMenu" class="export-dropdown-menu">
+                            <a href="#" onclick="exportToExcel(); closeExportDropdown(); return false;">Export to Excel (.xlsx)</a>
+                            <a href="#" onclick="exportToDoc(); closeExportDropdown(); return false;">Export to Word (.docx)</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <p style="font-weight: bold; font-size: 1.1em; color: #28a745; margin-top:15px; padding-top:10px; border-top: 1px solid #ccc;">Remaining Margin: <span id="remainingMargin">0</span></p>
         </form>
     </div>
 
     <script>
         let fieldCounter = 0;
-        const addFieldFormContainer = document.getElementById('addFieldFormContainer');
-        const newFieldNameInput = document.getElementById('newFieldName');
-        const newFieldNameError = document.getElementById('newFieldNameError');
-        const newFieldTypeSelect = document.getElementById('newFieldType');
-        const extraFieldsContainer = document.getElementById('extraFields'); // This is the correct container
-        const mainAddButton = document.getElementById('showAddFieldFormBtn');
+        const getEl = id => document.getElementById(id);
+        const addFieldFormContainer=getEl('addFieldFormContainer'),newFieldNameInput=getEl('newFieldName'),
+              newFieldNameError=getEl('newFieldNameError'),newFieldTypeSelect=getEl('newFieldType'),
+              extraFieldsContainer=getEl('extraFields'),mainAddButton=getEl('showAddFieldFormBtn'),
+              exportDropdownMenu=getEl('exportDropdownMenu');
+        let priceBreakdownChart = null;
 
-        function showAddFieldForm() {
-            addFieldFormContainer.style.display = 'block';
-            newFieldNameInput.value = '';
-            newFieldTypeSelect.value = 'fixed';
-            newFieldNameError.textContent = '';
-            mainAddButton.style.display = 'none'; // Hide the main "Add" button
-            newFieldNameInput.focus();
-        }
+        const toggleExportDropdown=()=>exportDropdownMenu.style.display=exportDropdownMenu.style.display==='block'?'none':'block';
+        const closeExportDropdown=()=>exportDropdownMenu.style.display='none';
+        window.onclick=event=>{if(!event.target.matches('#exportBtn')&&!event.target.closest('.export-dropdown-menu')&&exportDropdownMenu.style.display==='block'){closeExportDropdown();}};
 
-        function hideAddFieldForm() {
-            addFieldFormContainer.style.display = 'none';
-            mainAddButton.style.display = 'block'; // Show the main "Add" button again
-            newFieldNameError.textContent = '';
-        }
+        const showAddFieldForm=()=>{addFieldFormContainer.style.display='block';newFieldNameInput.value='';newFieldTypeSelect.value='fixed';newFieldNameError.textContent='';mainAddButton.style.display='none';newFieldNameInput.focus();};
+        const hideAddFieldForm=()=>{addFieldFormContainer.style.display='none';mainAddButton.style.display='block';newFieldNameError.textContent='';};
 
-        function confirmAndCreateField() {
-            const fieldName = newFieldNameInput.value.trim();
-            const fieldType = newFieldTypeSelect.value;
+        const createDOMElement=(tag,className,attrs={},text='')=>{const el=document.createElement(tag);if(className)el.className=className;Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));if(text)el.textContent=text;return el;};
 
-            if (!fieldName) {
-                newFieldNameError.textContent = 'Field name cannot be empty.';
-                newFieldNameInput.focus();
-                return;
-            }
-            newFieldNameError.textContent = '';
-
-            fieldCounter++;
-            const fieldInputId = `extraValueInput_${fieldCounter}`;
-
-            const fieldItemDiv = document.createElement('div');
-            fieldItemDiv.className = 'extra-field-item';
-
-            const label = document.createElement('label');
-            label.setAttribute('for', fieldInputId);
-            label.textContent = fieldName;
-
-            const inputWrapper = document.createElement('div');
-            inputWrapper.className = 'input-delete-wrapper';
-
-            const valueInput = document.createElement('input');
-            valueInput.type = 'number';
-            valueInput.id = fieldInputId;
-            valueInput.placeholder = fieldType === 'percentage_taxable' ? 'Enter %' : 'Enter Amount';
-            valueInput.className = 'extra-value-input';
-            valueInput.dataset.name = fieldName;
-            valueInput.dataset.type = fieldType;
-            valueInput.oninput = updatePricing;
-
-            const deleteBtn = document.createElement('button');
-            deleteBtn.type = 'button';
-            deleteBtn.className = 'delete-btn';
-            deleteBtn.innerHTML = '❌';
-            deleteBtn.title = 'Delete this field';
-            deleteBtn.onclick = () => {
-                extraFieldsContainer.removeChild(fieldItemDiv); // Remove from #extraFields
-                updatePricing();
-            };
-
-            inputWrapper.appendChild(valueInput);
-            inputWrapper.appendChild(deleteBtn);
-
-            fieldItemDiv.appendChild(label);
-            fieldItemDiv.appendChild(inputWrapper);
-
-            // Append the new field to the #extraFields container
-            // Since #extraFields is now positioned above the "Add" button in HTML, this works.
+        const confirmAndCreateField=()=>{
+            const fieldName=newFieldNameInput.value.trim();
+            if(!fieldName){newFieldNameError.textContent='Field name cannot be empty.';newFieldNameInput.focus();return;}
+            newFieldNameError.textContent='';fieldCounter++;
+            const fieldType=newFieldTypeSelect.value,fieldInputId=`extraValueInput_${fieldCounter}`;
+            const fieldItemDiv=createDOMElement('div','extra-field-item');
+            const valueInput=createDOMElement('input','extra-value-input',{type:'number',id:fieldInputId,placeholder:fieldType==='percentage_taxable'?'Enter %':'Enter Amount'});
+            valueInput.dataset.name=fieldName;valueInput.dataset.type=fieldType;valueInput.dataset.inputValue="";
+            valueInput.oninput=()=>{valueInput.dataset.inputValue=valueInput.value;updatePricing();};
+            const deleteBtn=createDOMElement('button','delete-btn',{type:'button',title:'Delete this field'},'❌');
+            deleteBtn.onclick=()=>{extraFieldsContainer.removeChild(fieldItemDiv);updatePricing();};
+            const inputWrapper=createDOMElement('div','input-delete-wrapper');
+            inputWrapper.append(valueInput,deleteBtn);
+            fieldItemDiv.append(createDOMElement('label','',{for:fieldInputId},fieldName),inputWrapper);
             extraFieldsContainer.appendChild(fieldItemDiv);
+            hideAddFieldForm();updatePricing();
+        };
 
-            hideAddFieldForm();
-            updatePricing();
-        }
+        const updatePricing = () => {
+            const mfgPrice=parseFloat(getEl("mfgPrice").value)||0,sellingPrice=parseFloat(getEl("sellingPrice").value)||0,
+                  gstRate=parseFloat(getEl("gst").value)||0,operationalCosts=parseFloat(getEl("operationalCosts").value)||0;
+            const priceBeforeGST=gstRate>0?sellingPrice/(1+gstRate/100):sellingPrice;
+            const gstAmount=sellingPrice-priceBeforeGST;
+            let totalCalculatedDynamicExtraCosts=0, extraReportHTML="";
+            const dynamicExtraCostsList = []; // For storing individual dynamic costs for reports/exports
 
+            document.querySelectorAll("#extraFields .extra-value-input").forEach(input => {
+                const { type, name: costNameDataset } = input.dataset;
+                const costName = costNameDataset || "Unnamed Cost";
+                // Use dataset.inputValue for percentage calculations, otherwise current value.
+                let valueForCalc = type === "percentage_taxable" ? (parseFloat(input.dataset.inputValue) || 0) : (parseFloat(input.value) || 0);
+                const calculatedValue = type === "percentage_taxable" ? (priceBeforeGST * valueForCalc) / 100 : valueForCalc;
 
-        function updatePricing() {
-            let mfgPrice = parseFloat(document.getElementById("mfgPrice").value) || 0;
-            let sellingPrice = parseFloat(document.getElementById("sellingPrice").value) || 0;
-            let gstRate = parseFloat(document.getElementById("gst").value) || 0;
-            let operationalCosts = parseFloat(document.getElementById("operationalCosts").value) || 0;
-
-            let priceBeforeGST = 0;
-            let gstAmount = 0;
-
-            if (gstRate > 0) {
-                priceBeforeGST = sellingPrice / (1 + gstRate / 100);
-                gstAmount = sellingPrice - priceBeforeGST;
-            } else {
-                priceBeforeGST = sellingPrice;
-                gstAmount = 0;
-            }
-            
-            let totalExtraCosts = 0;
-            let extraReportHTML = "";
-
-            // Query within the #extraFields container specifically
-            document.querySelectorAll("#extraFields .extra-field-item .extra-value-input").forEach(input => {
-                let type = input.dataset.type;
-                let value = parseFloat(input.value) || 0;
-                let name = input.dataset.name || "Unnamed Cost";
-                
-                let calculatedValue = 0;
-                if (type === "percentage_taxable") {
-                    calculatedValue = (priceBeforeGST * value) / 100;
-                } else { 
-                    calculatedValue = value;
-                }
-                totalExtraCosts += calculatedValue;
-                extraReportHTML += `<p>${name}: <span>${calculatedValue.toFixed(2)}</span></p>`;
+                totalCalculatedDynamicExtraCosts += calculatedValue;
+                extraReportHTML += `<p>${costName}: <span>${calculatedValue.toFixed(2)}</span></p>`;
+                dynamicExtraCostsList.push({ name: costName, type: type==='fixed'?'Fixed Amount':`Percentage of Taxable Price (${valueForCalc}%)`, inputValue: valueForCalc, calculatedValue: calculatedValue.toFixed(2) });
             });
 
-            document.getElementById("reportMfgPrice").textContent = mfgPrice.toFixed(2);
-            document.getElementById("reportSellingPrice").textContent = sellingPrice.toFixed(2);
-            document.getElementById("gstAmount").textContent = gstAmount.toFixed(2);
-            document.getElementById("priceBeforeGST").textContent = priceBeforeGST.toFixed(2);
-            document.getElementById("reportOperationalCosts").textContent = operationalCosts.toFixed(2);
-            document.getElementById("extraReport").innerHTML = extraReportHTML;
+            getEl("reportMfgPrice").textContent=mfgPrice.toFixed(2);getEl("reportSellingPrice").textContent=sellingPrice.toFixed(2);
+            getEl("gstAmount").textContent=gstAmount.toFixed(2);getEl("priceBeforeGST").textContent=priceBeforeGST.toFixed(2);
+            getEl("reportOperationalCosts").textContent=operationalCosts.toFixed(2);
+            getEl("extraReport").innerHTML = extraReportHTML; // Display individual dynamic costs on page
 
-            let totalCostsIncurred = mfgPrice + operationalCosts + totalExtraCosts;
-            let remainingMargin = priceBeforeGST - totalCostsIncurred;
+            const remainingMargin=priceBeforeGST-(mfgPrice+operationalCosts+totalCalculatedDynamicExtraCosts);
+            const marginSpan=getEl("remainingMargin");
+            marginSpan.textContent=remainingMargin.toFixed(2);marginSpan.style.color=remainingMargin>=0?'#28a745':'#dc3545';
 
-            const marginSpan = document.getElementById("remainingMargin");
-            marginSpan.textContent = remainingMargin.toFixed(2);
-            marginSpan.style.color = remainingMargin >= 0 ? '#28a745' : '#dc3545';
-        }
+            const chartSegments = [
+                {label:'Manufacturing Price',value:mfgPrice},{label:'Operational Costs',value:operationalCosts},
+                ...dynamicExtraCostsList.map(c=>({label:c.name,value:parseFloat(c.calculatedValue)})), // Use calculated value
+                {label:'GST Amount',value:gstAmount},{label:'Profit Margin',value:remainingMargin}
+            ].filter(s=>s.value!==0||s.label==='Profit Margin');
+            updatePieChart(chartSegments.map(s=>s.label),chartSegments.map(s=>s.value));
+        };
+        
+        const updatePieChart = (labels, dataValues) => {
+            const ctx = getEl('priceBreakdownChart').getContext('2d');
+            const fixedColorMap={'Manufacturing Price':{bg:'rgba(255,99,132,0.7)',border:'rgba(255,99,132,1)'},'Operational Costs':{bg:'rgba(54,162,235,0.7)',border:'rgba(54,162,235,1)'},'GST Amount':{bg:'rgba(255,206,86,0.7)',border:'rgba(255,206,86,1)'},'Profit Margin':{bg:'rgba(75,192,192,0.7)',border:'rgba(75,192,192,1)'}};
+            const dynamicColorsPalette=[{bg:'rgba(153,102,255,0.7)',border:'rgba(153,102,255,1)'},{bg:'rgba(255,159,64,0.7)',border:'rgba(255,159,64,1)'},{bg:'rgba(201,203,207,0.7)',border:'rgba(201,203,207,1)'},{bg:'rgba(255,99,71,0.7)',border:'rgba(255,99,71,1)'},{bg:'rgba(60,179,113,0.7)',border:'rgba(60,179,113,1)'}];
+            let dynamicColorIdx=0;
+            const chartColors=labels.map(label=>fixedColorMap[label]||dynamicColorsPalette[dynamicColorIdx++%dynamicColorsPalette.length]);
 
-        document.addEventListener('DOMContentLoaded', updatePricing);
+            if(priceBreakdownChart)priceBreakdownChart.destroy();
+            priceBreakdownChart = new Chart(ctx, {type:'pie',
+                data:{labels,datasets:[{data:dataValues,backgroundColor:chartColors.map(c=>c.bg),borderColor:chartColors.map(c=>c.border),borderWidth:1}]},
+                options:{responsive:true,maintainAspectRatio:false,
+                    devicePixelRatio: window.devicePixelRatio * 1.5, // Attempt to render at higher resolution
+                    animation:{onComplete:()=>{if(priceBreakdownChart){
+                        // Get image at a slightly higher resolution if possible
+                        const canvas = priceBreakdownChart.canvas;
+                        const tempCanvas = document.createElement('canvas');
+                        const tempCtx = tempCanvas.getContext('2d');
+                        const scaleFactor = 2; // Render at 2x for better quality
+                        tempCanvas.width = canvas.width * scaleFactor;
+                        tempCanvas.height = canvas.height * scaleFactor;
+                        tempCtx.scale(scaleFactor, scaleFactor);
+                        tempCtx.drawImage(canvas, 0, 0);
+                        priceBreakdownChart.base64Image = tempCanvas.toDataURL('image/png', 1.0);
+                    }}},
+                    plugins:{legend:{display:true,position:'bottom'},tooltip:{callbacks:{label:ctx=>`${ctx.chart.data.labels[ctx.dataIndex]||ctx.label||''}: ${new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(ctx.parsed||0)}`}}}}
+            });
+        };
+
+        const getAllDataForExport = () => {
+            const mfgPrice=parseFloat(getEl("mfgPrice").value)||0,sellingPrice=parseFloat(getEl("sellingPrice").value)||0,
+                  gstRate=parseFloat(getEl("gst").value)||0,operationalCosts=parseFloat(getEl("operationalCosts").value)||0;
+            const priceBeforeGST=gstRate>0?sellingPrice/(1+gstRate/100):sellingPrice;
+            const gstAmount=sellingPrice-priceBeforeGST;
+            const extraCostsListForReport = []; // Explicit list for the "Dynamic Costs" table in export
+            let totalCalculatedDynamicExtraCosts = 0;
+
+            document.querySelectorAll("#extraFields .extra-value-input").forEach(input => {
+                const { name: costNameDataset, type, inputValue: userInputValue } = input.dataset;
+                const costName = costNameDataset || "Unnamed Cost";
+                let valueForCalc = type === "percentage_taxable" ? (parseFloat(userInputValue) || 0) : (parseFloat(input.value) || 0);
+                const calculatedValue = type === "percentage_taxable" ? (priceBeforeGST * valueForCalc) / 100 : valueForCalc;
+                totalCalculatedDynamicExtraCosts += calculatedValue;
+                extraCostsListForReport.push({ name: costName, type: type==='fixed'?'Fixed Amount':`Percentage of Taxable Price (${valueForCalc}%)`, inputValue: valueForCalc, calculatedValue: calculatedValue.toFixed(2) });
+            });
+            const remainingMargin=priceBeforeGST-(mfgPrice+operationalCosts+totalCalculatedDynamicExtraCosts);
+            
+            // Pie chart data should reflect all components of selling price
+            const pieChartSegments = [
+                {label:'Manufacturing Price',value:mfgPrice},
+                {label:'Operational Costs',value:operationalCosts},
+                ...extraCostsListForReport.map(c=>({label:c.name,value:parseFloat(c.calculatedValue)})), // Use calculated values from the list
+                {label:'GST Amount',value:gstAmount},
+                {label:'Profit Margin',value:remainingMargin}
+            ].filter(s=>s.value!==0||s.label==='Profit Margin'); // Keep profit margin even if zero or negative
+
+            return {
+                inputs:{mfgPrice:mfgPrice.toFixed(2),sellingPrice:sellingPrice.toFixed(2),gstRate:gstRate.toFixed(2),operationalCosts:operationalCosts.toFixed(2)},
+                calculations:{priceBeforeGST:priceBeforeGST.toFixed(2),gstAmount:gstAmount.toFixed(2),totalSumOfExtraCosts:totalCalculatedDynamicExtraCosts.toFixed(2),remainingMargin:remainingMargin.toFixed(2)},
+                detailedExtraCosts: extraCostsListForReport, // This list is for the detailed table
+                pieChart:{labels:pieChartSegments.map(s=>s.label),values:pieChartSegments.map(s=>s.value),base64Image:priceBreakdownChart?priceBreakdownChart.base64Image:null}
+            };
+        };
+
+        const exportToExcel = () => {
+            if(typeof XLSX==='undefined')return alert('Excel export library (XLSX) is not loaded.');
+            const data=getAllDataForExport(),wb=XLSX.utils.book_new();
+            const summaryData=[ ["Item","Value"],["Manufacturing Price",data.inputs.mfgPrice],["Selling Price (GST Incl.)",data.inputs.sellingPrice],["GST (%)",data.inputs.gstRate],["Operational Costs",data.inputs.operationalCosts],[""],["Price Before GST (Taxable)",data.calculations.priceBeforeGST],["GST Amount",data.calculations.gstAmount],["Total of All Extra Costs",data.calculations.totalSumOfExtraCosts],["Remaining Margin",data.calculations.remainingMargin] ];
+            XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(summaryData),"Summary");
+            if(data.detailedExtraCosts.length>0){
+                const h=["Cost Name","Type","Input Value","Calculated Value"],r=data.detailedExtraCosts.map(ec=>[ec.name,ec.type,ec.inputValue,ec.calculatedValue]);
+                XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([h,...r]),"Detailed Extra Costs");
+            }
+            if(data.pieChart.labels.length>0){
+                const h=["Category","Value"],r=data.pieChart.labels.map((l,i)=>[l,data.pieChart.values[i].toFixed(2)]);
+                XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([h,...r]),"Pie Chart Data");
+            }
+            XLSX.writeFile(wb,"ProductPricingReport.xlsx");
+        };
+
+       const exportToDoc = async () => {
+            if(typeof docx==='undefined')return alert('Word export library (docx) is not loaded.');
+            const data=getAllDataForExport();
+            const {Document,Packer,Paragraph,TextRun,HeadingLevel,Table,TableCell,TableRow,WidthType,AlignmentType,ImageRun}=docx;
+            const txt=(val,b=false,c=undefined,s=undefined)=>new TextRun({text:String(val),bold:b,color:c,size:s});
+            const children = [
+                new Paragraph({children:[txt("Product Pricing Report",true,undefined,32)],heading:HeadingLevel.HEADING_1,alignment:AlignmentType.CENTER,spacing:{after:200}}),
+                new Paragraph({text:"Input Parameters",heading:HeadingLevel.HEADING_2,spacing:{before:300,after:100}}),
+                new Paragraph({children:[txt("Manufacturing Price: "),txt(data.inputs.mfgPrice,true)]}),new Paragraph({children:[txt("Selling Price (GST Incl.): "),txt(data.inputs.sellingPrice,true)]}),
+                new Paragraph({children:[txt("GST (%): "),txt(data.inputs.gstRate,true)]}),new Paragraph({children:[txt("Operational Costs: "),txt(data.inputs.operationalCosts,true)]}),
+                new Paragraph({text:"Calculated Overview",heading:HeadingLevel.HEADING_2,spacing:{before:300,after:100}}),
+                new Paragraph({children:[txt("Price Before GST (Taxable): "),txt(data.calculations.priceBeforeGST,true)]}),new Paragraph({children:[txt("GST Amount: "),txt(data.calculations.gstAmount,true)]}),
+                new Paragraph({children:[txt("Total of All Extra Costs: "),txt(data.calculations.totalSumOfExtraCosts,true)]}),
+                new Paragraph({children:[txt("Remaining Margin: "),txt(data.calculations.remainingMargin,true,parseFloat(data.calculations.remainingMargin)>=0?"008000":"FF0000")]}),
+            ];
+            if(data.detailedExtraCosts.length>0){
+                children.push(new Paragraph({text:"Detailed Extra Costs Breakdown",heading:HeadingLevel.HEADING_2,spacing:{before:300,after:100}}));
+                const h=new TableRow({children:[new TableCell({children:[new Paragraph({children:[txt("Cost Name",true)]})],width:{size:3500,type:WidthType.DXA}}),new TableCell({children:[new Paragraph({children:[txt("Type",true)]})],width:{size:3500,type:WidthType.DXA}}),new TableCell({children:[new Paragraph({children:[txt("Input",true)]})],width:{size:1500,type:WidthType.DXA}}),new TableCell({children:[new Paragraph({children:[txt("Calculated",true)]})],width:{size:1500,type:WidthType.DXA}}), ]});
+                const r=data.detailedExtraCosts.map(ec=>new TableRow({children:[new TableCell({children:[new Paragraph(txt(ec.name))]}),new TableCell({children:[new Paragraph(txt(ec.type))]}),new TableCell({children:[new Paragraph(txt(ec.inputValue))]}),new TableCell({children:[new Paragraph(txt(ec.calculatedValue))]}),]}));
+                children.push(new Table({rows:[h,...r],width:{size:100,type:WidthType.PERCENTAGE}}));
+            }
+            if(data.pieChart.base64Image){
+                children.push(new Paragraph({text:"Price Breakdown Chart",heading:HeadingLevel.HEADING_2,spacing:{before:300,after:100}}));
+                try{const imgBuf=Uint8Array.from(atob(data.pieChart.base64Image.split(',')[1]),c=>c.charCodeAt(0));children.push(new Paragraph({children:[new ImageRun({data:imgBuf,transformation:{width:450,height:300}})],alignment:AlignmentType.CENTER}));} // Keep fixed size for consistency
+                catch(e){console.error("Error chart image for DOCX:",e);children.push(new Paragraph({children:[txt("(Chart image could not be embedded)",false,"FF0000")]}));}
+            }else if(data.pieChart.labels.length>0){
+                 children.push(new Paragraph({text:"Price Breakdown Chart Data",heading:HeadingLevel.HEADING_2,spacing:{before:300,after:100}}));
+                 const h=new TableRow({children:[new TableCell({children:[new Paragraph(txt("Category",true))]}),new TableCell({children:[new Paragraph(txt("Value",true))]})]});
+                 const r=data.pieChart.labels.map((l,i)=>new TableRow({children:[new TableCell({children:[new Paragraph(txt(l))]}),new TableCell({children:[new Paragraph(txt(data.pieChart.values[i].toFixed(2)))]})]}));
+                 children.push(new Table({rows:[h,...r],width:{size:80,type:WidthType.PERCENTAGE}}));
+            }
+            const doc=new Document({sections:[{properties:{},children}]});
+            Packer.toBlob(doc).then(blob=>{const link=createDOMElement('a','',{href:URL.createObjectURL(blob),download:'ProductPricingReport.docx'});document.body.appendChild(link);link.click();document.body.removeChild(link);URL.revokeObjectURL(link.href);});
+        };
+        document.addEventListener('DOMContentLoaded',updatePricing);
     </script>
 </body>
 </html>
